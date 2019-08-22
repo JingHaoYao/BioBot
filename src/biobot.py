@@ -91,7 +91,7 @@ def handle_command(command, channel):
     response = None
     # This is where you start to implement more commands!
     if command.startswith("help"):
-        response = "Possible commands are: " + " ".join(command_list)
+        response = "Possible commands are:\n- " + "\n- ".join(command_list)
 
     # Sends the response back to the channel
     slack_client.api_call(
@@ -107,7 +107,7 @@ if __name__ == "__main__":
         with_team_state=False,
         auto_reconnect=True
     ):
-        print("Starter Bot connected and running!")
+        print("BioBot connected and running!")
         # Read bot's user ID by calling Web API method `auth.test`
         starterbot_id = slack_client.api_call("auth.test")["user_id"]
         while True:
