@@ -32,7 +32,7 @@ class BioBotDB():
         #
         self.cursor.execute(self.create_table)
         self.conn.commit()
-
+        
     def delete_bio_db(self, slack_id):
         # constructing delete command
         delete_cmd = "DELETE FROM BIOBOT_ENTRIES WHERE SLACK_ID='{}'".format(slack_id)
@@ -44,6 +44,15 @@ class BioBotDB():
         self.conn.commit()
 
     def insert_bio_db(self, slack_id, name, company_role, bio):
+        select_cmd = (
+            "SELECT * FROM BIOBOT_ENTRIES WHERE SLACK_ID='{}'".format(slack_id)
+        )
+
+        self.cursor.execute(select_cmd)
+        self.conn.commit()
+        if self.cursor.fetchone() is not None:
+            self.delete_bio_db(slack_id)
+        
         insert_cmd = (
             "insert into BIOBOT_ENTRIES ("
             "SLACK_ID,"
