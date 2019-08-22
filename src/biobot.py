@@ -32,7 +32,6 @@ def parse_bot_commands(slack_events):
     for event in slack_events:
         if event["type"] == "message" and not "subtype" in event:
             user_id, message = parse_direct_mention(event["text"])
-            print (event["text"])
             user = event["user"]
             if user_id == biobot_id:
                 return message, event["channel"], user
@@ -66,12 +65,16 @@ def handle_command(command, channel, user):
     # This is where you start to implement more commands!
     if command.startswith("help"):
         response = "Possible commands are:\n- " + "\n- ".join(command_list)
+    elif command.startswith("add bio"):
+        
 
     # Sends the response back to the channel
     post_message(
         channel,
         text=response or default_response
     )
+
+
 
 if __name__ == "__main__":
 
