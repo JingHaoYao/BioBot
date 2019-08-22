@@ -12,7 +12,8 @@ biobot_id = None
 
 # constants
 RTM_READ_DELAY = 0.2
-MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
+MENTION_REGEX1 = "^<@(|[WU].+?)>(.*)"
+MENTION_REGEX2 = "<@(|[WU].+?)>(.*)"
 command_list = [
     "add bio",
     "remove bio",
@@ -29,6 +30,7 @@ def parse_bot_commands(slack_events):
     """
     for event in slack_events:
         if event["type"] == "message" and not "subtype" in event:
+            print event["text"]
             user_id, message = parse_direct_mention(event["text"])
             user = event["user"]
             if user_id == biobot_id:
@@ -40,7 +42,9 @@ def parse_direct_mention(message_text):
         Finds a direct mention (a mention that is at the beginning) in message text
         and returns the user ID which was mentioned. If there is no direct mention, returns None
     """
-    matches = re.search(MENTION_REGEX, message_text)
+    matches = re.search(MENTION_REGEX1, message_text)
+    if not matches:
+        matches = re.search(MENTION_REGEX2, message_text)
     print (matches.group(1))
     # the first group contains the username, the second group contains the remaining message
     return (matches.group(1), matches.group(2).strip()) if matches else (None, None)
@@ -65,7 +69,8 @@ def handle_command(command, channel, user):
     if command.startswith("help"):
         response = "Possible commands are:\n- " + "\n- ".join(command_list)
     elif command.startswith("display bio"):
-        slack_id, msg = parse_direct_mention(command.split()[2])
+        info = command.split(' ')
+        slack_id, msg = parse_direct_mention(command)
         if slack_id is None:
             response = "Please enter a person to display their bio!"
         else:
