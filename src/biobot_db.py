@@ -50,7 +50,7 @@ class BioBotDB():
             "NAME,"
             "COMPANY_ROLE,"
             "BIO, "
-            "BLOB"
+            "PICTURE"
             ") "
             "values (?, ?, ?, ?, ?)"
         )
@@ -74,11 +74,17 @@ class BioBotDB():
         self.cursor.execute(select_cmd)
         self.conn.commit()
 
-        message = (
-            "Name: {}\n"
-            "Role: {}\n"
-            "Biography: {}"
-        ).format(self.cursor.fetchone()[1], self.cursor.fetchone()[2], self.cursor.fetchone()[3])
+        message = None
+        image_bin = None
+        if self.cursor.fetchone() is not None:
+            message = (
+                "Name: {}\n"
+                "Role: {}\n"
+                "Biography: {}"
+            ).format(self.cursor.fetchone()[1], self.cursor.fetchone()[2], self.cursor.fetchone()[3])
+            image_bin = cursor.fetchone()[4]
+        else:
+            message = "No biography to display."
 
-        return [cursor.fetchone()[4], message]
+        return [image_bin, message]
 
