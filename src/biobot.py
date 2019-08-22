@@ -78,6 +78,47 @@ def handle_command(command, channel, user):
     elif command.startswith("remove bio"):
         biobot_db.delete_bio_db(user)
         response = "Bio deleted!"
+    elif command.startswith("add bio"):
+        response = "Sure thing, <@{}>! Can you tell me your name?".format(user)
+        post_message(
+            channel,
+            text=response
+        )
+        missing_param = True
+        while missing_param:
+            for event in slack_client.rtm_read():
+                if event["type"] == "message" and not "subtype" in event:
+                  if event["user"] == user:
+                        add_bio_name = event["text"]
+                        missing_param = False
+        response = "What is your role at OANDA?"
+        post_message(
+            channel,
+            text=response
+        )
+        missing_param = True
+        while missing_param:
+            for event in slack_client.rtm_read():
+                if event["type"] == "message" and not "subtype" in event:
+                  if event["user"] == user:
+                        add_bio_role = event["text"]
+                        missing_param = False
+        response = "Can you give me a brief description about yourself " \
+        "(where are you from,\n what are your hobbies, what would you like people to know about you, etc)?"
+        post_message(
+            channel,
+            text=response
+        )
+        missing_param = True
+        while missing_param:
+            for event in slack_client.rtm_read():
+                if event["type"] == "message" and not "subtype" in event:
+                  if event["user"] == user:
+                        add_bio_desc = event["text"]
+                        missing_param = False
+
+        response = "Thanks! Here's a rundown of what you added:\nName: {}\nRole: {}\nBio: {}".format(add_bio_name, add_bio_role, add_bio_desc)
+        # biobot_db.insert_bio_db(user, add_bio_name, add_bio_role, add_bio_desc, None)
 
     # Sends the response back to the channel
     post_message(
