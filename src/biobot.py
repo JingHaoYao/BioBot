@@ -1,6 +1,7 @@
 import os
 import time
 import re
+import sqlite3
 from slackclient import SlackClient
 
 
@@ -18,6 +19,44 @@ command_list = [
     "remove bio",
     "display bio"
 ]
+
+#
+# sql commands
+#
+create_table = (
+    "CREATE TABLE IF NOT EXISTS BIOBOT_ENTRIES ("
+    "SLACK_ID VARCHAR(64) NOT NULL, "
+    "NAME VARCHAR(64) NOT NULL, "
+    "COMPANY_ROLE VARCHAR(64) NOT NULL, "
+    "BIO VARCHAR(64) NOT NULL"
+    ")"
+)
+
+sqlite_path = os.getenv("HOME") + "/biobot_sqlite.db"
+
+def setup_biobot_db():
+    #
+    # Connect to sqlite database
+    #
+    self.conn = sqlite3.connect(sqlite_path)
+    self.conn.text_factory = str
+    self.cursor = cls.conn.cursor()
+
+    #
+    # Create table
+    #
+    self.cursor.execute(create_table)
+    self.conn.commit()
+
+def delete_bio_db(slack_id):
+    # constructing delete command
+    delete_cmd = "DELETE FROM BIOBOT_ENTRIES WHERE SLACK_ID='{}'".format(slack_id)
+
+    #
+    # execute delete command
+    #
+    self.cursor.execute(delete_cmd)
+    self.conn.commit()
 
 def parse_bot_commands(slack_events):
     """
@@ -62,6 +101,8 @@ def handle_command(command, channel):
     )
 
 if __name__ == "__main__":
+    self.setup_biobot_db()
+
     if slack_client.rtm_connect(
         with_team_state=False,
         auto_reconnect=True
