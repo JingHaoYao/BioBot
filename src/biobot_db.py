@@ -14,7 +14,7 @@ class BioBotDB():
             "NAME VARCHAR(64) NOT NULL, "
             "COMPANY_ROLE VARCHAR(64) NOT NULL, "
             "BIO TEXT NOT NULL, "
-            "PICTURE BLOB NOT NULL"
+            "PICTURE IMAGE NOT NULL"
             ")"
         )
 
@@ -43,24 +43,22 @@ class BioBotDB():
         self.cursor.execute(delete_cmd)
         self.conn.commit()
 
-    def insert_bio_db(self, slack_id, name, company_role, bio, img):
+    def insert_bio_db(self, slack_id, name, company_role, bio):
         insert_cmd = (
             "insert into BIOBOT_ENTRIES ("
             "SLACK_ID,"
             "NAME,"
             "COMPANY_ROLE,"
-            "BIO, "
-            "PICTURE"
+            "BIO "
             ") "
-            "values (?, ?, ?, ?, ?)"
+            "values (?, ?, ?, ?)"
         )
 
         params = (
             slack_id,
             name,
             company_role,
-            bio,
-            img
+            bio
         )
 
         self.cursor.execute(insert_cmd, params)
@@ -76,15 +74,15 @@ class BioBotDB():
 
         message = None
         image_bin = None
-        if self.cursor.fetchone() is not None:
+        data = self.cursor.fetchone()
+        if data is not None:
             message = (
                 "Name: {}\n"
                 "Role: {}\n"
                 "Biography: {}"
-            ).format(self.cursor.fetchone()[1], self.cursor.fetchone()[2], self.cursor.fetchone()[3])
-            image_bin = cursor.fetchone()[4]
+            ).format(data[1], data[2], data[3])
         else:
             message = "No biography to display."
 
-        return [image_bin, message]
+        return image_bin, message
 

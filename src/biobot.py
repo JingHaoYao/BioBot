@@ -77,7 +77,7 @@ def handle_command(command, channel, user):
             response = biobot_db.select_bio_db(slack_id)
     elif command.startswith("remove bio"):
         biobot_db.delete_bio_db(user)
-        response = "Bio deleted!"
+        image, response = "Bio deleted!"
     elif command.startswith("add bio"):
         response = "Sure thing, <@{}>! Can you tell me your name?".format(user)
         post_message(
@@ -118,7 +118,7 @@ def handle_command(command, channel, user):
                         missing_param = False
 
         response = "Thanks! Here's a rundown of what you added:\nName: {}\nRole: {}\nBio: {}".format(add_bio_name, add_bio_role, add_bio_desc)
-        # biobot_db.insert_bio_db(user, add_bio_name, add_bio_role, add_bio_desc, None)
+        biobot_db.insert_bio_db(user, add_bio_name, add_bio_role, add_bio_desc)
 
     # Sends the response back to the channel
     post_message(
