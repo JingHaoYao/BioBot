@@ -9,10 +9,10 @@ from biobot_db import BioBotDB
 # instantiate Slack client
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 # starterbot's user ID in Slack: value is assigned after the bot starts up
-biobot_id = None
+starterbot_id = None
 
 # constants
-RTM_READ_DELAY = 1 # 1 second delay between reading from RTM
+RTM_READ_DELAY = 0.2 # 1 second delay between reading from RTM
 MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
 
 command_list = [
@@ -33,7 +33,7 @@ def parse_bot_commands(slack_events):
         if event["type"] == "message" and not "subtype" in event:
             user_id, message = parse_direct_mention(event["text"])
             user = event["user"]
-            if user_id == biobot_id:
+            if user_id == starterbot_id:
                 return message, event["channel"], user
     return None, None, None
 
