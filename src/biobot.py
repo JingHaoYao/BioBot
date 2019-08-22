@@ -65,16 +65,18 @@ def handle_command(command, channel, user):
     # This is where you start to implement more commands!
     if command.startswith("help"):
         response = "Possible commands are:\n- " + "\n- ".join(command_list)
-    elif command.startswith("add bio"):
-        
+    elif command.startswith("display bio"):
+        slack_id, msg = parse_direct_mention(command)
+        if slack_id is None:
+            response = "Please enter a person to display their bio!"
+        else:
+            response = biobot_db.select_bio_db(slack_id)
 
     # Sends the response back to the channel
     post_message(
         channel,
         text=response or default_response
     )
-
-
 
 if __name__ == "__main__":
 
