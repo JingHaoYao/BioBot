@@ -8,13 +8,11 @@ from biobot_db import BioBotDB
 
 # instantiate Slack client
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
-# starterbot's user ID in Slack: value is assigned after the bot starts up
 biobot_id = None
 
 # constants
-RTM_READ_DELAY = 1 # 1 second delay between reading from RTM
+RTM_READ_DELAY = 0.2 # 1 second delay between reading from RTM
 MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
-
 command_list = [
     "add bio",
     "remove bio",
@@ -32,7 +30,6 @@ def parse_bot_commands(slack_events):
     for event in slack_events:
         if event["type"] == "message" and not "subtype" in event:
             user_id, message = parse_direct_mention(event["text"])
-            print (event["text"])
             user = event["user"]
             if user_id == biobot_id:
                 return message, event["channel"], user
@@ -66,6 +63,15 @@ def handle_command(command, channel, user):
     # This is where you start to implement more commands!
     if command.startswith("help"):
         response = "Possible commands are:\n- " + "\n- ".join(command_list)
+    elif command.startswith("display bio"):
+        slack_id, msg = parse_direct_mention(command)
+        if slack_id is None:
+            response = "Please enter a person to display their bio!"
+        else:
+            response = biobot_db.select_bio_db(slack_id)
+    elif command.startswith("remove bio"):
+        biobot_db.delete_bio_db(user)
+        response = "Bio deleted!"
 
     # Sends the response back to the channel
     post_message(
@@ -81,7 +87,7 @@ if __name__ == "__main__":
     ):
         print("BioBot connected and running!")
         # Read bot's user ID by calling Web API method `auth.test`
-        starterbot_id = slack_client.api_call("auth.test")["user_id"]
+        biobot_id = slack_client.api_call("auth.test")["user_id"]
         while True:
             command, channel, user = parse_bot_commands(slack_client.rtm_read())
             if command:
