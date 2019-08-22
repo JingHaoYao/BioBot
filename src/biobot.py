@@ -54,6 +54,16 @@ def post_message(channel, text):
         text=text
     )
 
+def get_bio_data_from_user(user):
+    missing = True
+    while missing:
+        for event in slack_client.rtm_read():
+            if event["type"] == "message" and not "subtype" in event:
+                if event["user"] == user:
+                    bio_param = event["text"]
+                    missing = False
+    return bio_param
+
 def handle_command(command, channel, user):
     """
         Executes bot command if the command is known
@@ -82,38 +92,22 @@ def handle_command(command, channel, user):
             channel,
             text=response
         )
-        missing_param = True
-        while missing_param:
-            for event in slack_client.rtm_read():
-                if event["type"] == "message" and not "subtype" in event:
-                  if event["user"] == user:
-                        add_bio_name = event["text"]
-                        missing_param = False
+        add_bio_name = get_bio_data_from_user(user)
+
         response = "What is your role at OANDA?"
         post_message(
             channel,
             text=response
         )
-        missing_param = True
-        while missing_param:
-            for event in slack_client.rtm_read():
-                if event["type"] == "message" and not "subtype" in event:
-                  if event["user"] == user:
-                        add_bio_role = event["text"]
-                        missing_param = False
+        add_bio_role = get_bio_data_from_user(user)
+
         response = "Can you give me a brief description about yourself " \
         "(where are you from,\n what are your hobbies, what would you like people to know about you, etc)?"
         post_message(
             channel,
             text=response
         )
-        missing_param = True
-        while missing_param:
-            for event in slack_client.rtm_read():
-                if event["type"] == "message" and not "subtype" in event:
-                  if event["user"] == user:
-                        add_bio_desc = event["text"]
-                        missing_param = False
+        add_bio_desc = get_bio_data_from_user(user)
 
         response = "Thanks! Here's a rundown of what you added:\nName: {}\nRole: {}\nBio: {}".format(add_bio_name, add_bio_role, add_bio_desc)
         biobot_db.insert_bio_db(user, add_bio_name, add_bio_role, add_bio_desc)

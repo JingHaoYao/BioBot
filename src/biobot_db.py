@@ -13,12 +13,10 @@ class BioBotDB():
             "SLACK_ID VARCHAR(64) NOT NULL, "
             "NAME VARCHAR(64) NOT NULL, "
             "COMPANY_ROLE VARCHAR(64) NOT NULL, "
-            "BIO TEXT NOT NULL, "
-            "PICTURE IMAGE NOT NULL"
+            "BIO TEXT NOT NULL "
             ")"
         )
-
-        self.sqlite_path = os.getenv("HOME") + "/biobot_sqlite.db"
+        self.sqlite_path = "/tmp/biobot_sqlite.db"
 
         #
         # Connect to sqlite database
