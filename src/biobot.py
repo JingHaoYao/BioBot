@@ -11,8 +11,13 @@ starterbot_id = None
 
 # constants
 RTM_READ_DELAY = 1 # 1 second delay between reading from RTM
-EXAMPLE_COMMAND = "do"
 MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
+
+command_list = [
+    "add bio",
+    "remove bio",
+    "display bio"
+]
 
 def parse_bot_commands(slack_events):
     """
@@ -41,13 +46,13 @@ def handle_command(command, channel):
         Executes bot command if the command is known
     """
     # Default response is help text for the user
-    default_response = "Not sure what you mean. Try *{}*.".format(EXAMPLE_COMMAND)
+    default_response = "Not sure what you mean. Try *help*"
 
     # Finds and executes the given command, filling in response
     response = None
     # This is where you start to implement more commands!
-    if command.startswith(EXAMPLE_COMMAND):
-        response = "Sure...write some more code then I can do that!"
+    if command.startswith("help"):
+        response = "Possible commands are: ".join(command_list)
 
     # Sends the response back to the channel
     slack_client.api_call(
@@ -57,7 +62,10 @@ def handle_command(command, channel):
     )
 
 if __name__ == "__main__":
-    if slack_client.rtm_connect(with_team_state=False):
+    if slack_client.rtm_connect(
+        with_team_state=False,
+        auto_reconnect=True
+    ):
         print("Starter Bot connected and running!")
         # Read bot's user ID by calling Web API method `auth.test`
         starterbot_id = slack_client.api_call("auth.test")["user_id"]
