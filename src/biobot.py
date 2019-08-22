@@ -30,7 +30,6 @@ def parse_bot_commands(slack_events):
     """
     for event in slack_events:
         if event["type"] == "message" and not "subtype" in event:
-            print event["text"]
             user_id, message = parse_direct_mention(event["text"])
             user = event["user"]
             if user_id == biobot_id:
@@ -45,7 +44,6 @@ def parse_direct_mention(message_text):
     matches = re.search(MENTION_REGEX1, message_text)
     if not matches:
         matches = re.search(MENTION_REGEX2, message_text)
-    print (matches.group(1))
     # the first group contains the username, the second group contains the remaining message
     return (matches.group(1), matches.group(2).strip()) if matches else (None, None)
 
@@ -77,7 +75,7 @@ def handle_command(command, channel, user):
             response = biobot_db.select_bio_db(slack_id)
     elif command.startswith("remove bio"):
         biobot_db.delete_bio_db(user)
-        image, response = "Bio deleted!"
+        response = "Bio deleted!"
     elif command.startswith("add bio"):
         response = "Sure thing, <@{}>! Can you tell me your name?".format(user)
         post_message(
