@@ -71,6 +71,9 @@ def handle_command(command, channel, user):
             response = "Please enter a person to display their bio!"
         else:
             response = biobot_db.select_bio_db(slack_id)
+    elif command.startswith("remove bio"):
+        biobot_db.delete_bio_db(user)
+        response = "Bio deleted!"
 
     # Sends the response back to the channel
     post_message(
