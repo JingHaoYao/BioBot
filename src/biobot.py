@@ -80,6 +80,13 @@ def parse_direct_mention(message_text):
     # the first group contains the username, the second group contains the remaining message
     return (matches.group(1), matches.group(2).strip()) if matches else (None, None)
 
+def post_message(channel, text):
+    slack_client.api_call(
+        "chat.postMessage",
+        channel=channel,
+        text=text
+    )
+
 def handle_command(command, channel):
     """
         Executes bot command if the command is known
@@ -94,9 +101,8 @@ def handle_command(command, channel):
         response = "Possible commands are:\n- " + "\n- ".join(command_list)
 
     # Sends the response back to the channel
-    slack_client.api_call(
-        "chat.postMessage",
-        channel=channel,
+    post_message(
+        channel,
         text=response or default_response
     )
 
