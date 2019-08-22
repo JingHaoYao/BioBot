@@ -52,7 +52,7 @@ def handle_command(command, channel):
     response = None
     # This is where you start to implement more commands!
     if command.startswith("help"):
-        response = "Possible commands are: " + "\n".join(command_list)
+        response = "Possible commands are: \n" + "\n".join(command_list)
 
     # Sends the response back to the channel
     slack_client.api_call(
