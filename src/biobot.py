@@ -11,7 +11,7 @@ slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 biobot_id = None
 
 # constants
-RTM_READ_DELAY = 0.2 # 1 second delay between reading from RTM
+RTM_READ_DELAY = 0.2
 MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
 command_list = [
     "add bio",
@@ -41,6 +41,7 @@ def parse_direct_mention(message_text):
         and returns the user ID which was mentioned. If there is no direct mention, returns None
     """
     matches = re.search(MENTION_REGEX, message_text)
+    print (matches.group(1))
     # the first group contains the username, the second group contains the remaining message
     return (matches.group(1), matches.group(2).strip()) if matches else (None, None)
 
@@ -64,7 +65,7 @@ def handle_command(command, channel, user):
     if command.startswith("help"):
         response = "Possible commands are:\n- " + "\n- ".join(command_list)
     elif command.startswith("display bio"):
-        slack_id, msg = parse_direct_mention(command)
+        slack_id, msg = parse_direct_mention(command.split()[2])
         if slack_id is None:
             response = "Please enter a person to display their bio!"
         else:
