@@ -8,7 +8,7 @@ class BioBotDB():
         #
         # sql commands
         #
-        cls.create_table = (
+        self.create_table = (
             "CREATE TABLE IF NOT EXISTS BIOBOT_ENTRIES ("
             "SLACK_ID VARCHAR(64) NOT NULL, "
             "NAME VARCHAR(64) NOT NULL, "
@@ -17,20 +17,20 @@ class BioBotDB():
             ")"
         )
 
-        cls.sqlite_path = os.getenv("HOME") + "/biobot_sqlite.db"
+        self.sqlite_path = os.getenv("HOME") + "/biobot_sqlite.db"
 
         #
         # Connect to sqlite database
         #
-        cls.conn = sqlite3.connect(sqlite_path)
-        cls.conn.text_factory = str
-        cls.cursor = cls.conn.cursor()
+        self.conn = sqlite3.connect(self.sqlite_path)
+        self.conn.text_factory = str
+        self.cursor = self.conn.cursor()
 
         #
         # Create table
         #
-        cls.cursor.execute(create_table)
-        cls.conn.commit()
+        self.cursor.execute(self.create_table)
+        self.conn.commit()
 
     def delete_bio_db(slack_id):
         # constructing delete command
@@ -39,8 +39,8 @@ class BioBotDB():
         #
         # execute delete command
         #
-        cls.cursor.execute(delete_cmd)
-        cls.conn.commit()
+        self.cursor.execute(delete_cmd)
+        self.conn.commit()
 
     def insert_bio_db(slack_id, name, company_role, bio):
         insert_cmd = (
@@ -60,22 +60,22 @@ class BioBotDB():
             bio
         )
 
-        cls.cursor.execute(insert_cmd, params)
-        cls.conn.commit()
+        self.cursor.execute(insert_cmd, params)
+        self.conn.commit()
 
     def select_bio_db(slack_id):
         select_cmd = (
             "SELECT * FROM BIOBOT_ENTRIES WHERE SLACK_ID='{}'".format(slack_id)
         )
 
-        cls.cursor.execute(select_cmd)
-        cls.conn.commit()
+        self.cursor.execute(select_cmd)
+        self.conn.commit()
 
         message = (
             "Name: {}\n"
             "Role: {}\n"
             "Biography: {}"
-        ).format(cls.cursor.fetchone()[1], cls.cursor.fetchone()[2], cls.cursor.fetchone()[3])
+        ).format(self.cursor.fetchone()[1], self.cursor.fetchone()[2], self.cursor.fetchone()[3])
 
         return message
 

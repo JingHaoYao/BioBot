@@ -72,7 +72,6 @@ def handle_command(command, channel):
     )
 
 if __name__ == "__main__":
-    self.setup_biobot_db()
 
     if slack_client.rtm_connect(
         with_team_state=False,
