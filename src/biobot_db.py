@@ -13,7 +13,8 @@ class BioBotDB():
             "SLACK_ID VARCHAR(64) NOT NULL, "
             "NAME VARCHAR(64) NOT NULL, "
             "COMPANY_ROLE VARCHAR(64) NOT NULL, "
-            "BIO TEXT NOT NULL"
+            "BIO TEXT NOT NULL, "
+            "PICTURE BLOB NOT NULL"
             ")"
         )
 
@@ -42,13 +43,14 @@ class BioBotDB():
         cls.cursor.execute(delete_cmd)
         cls.conn.commit()
 
-    def insert_bio_db(slack_id, name, company_role, bio):
+    def insert_bio_db(slack_id, name, company_role, bio, img):
         insert_cmd = (
             "insert into BIOBOT_ENTRIES ("
             "SLACK_ID,"
             "NAME,"
             "COMPANY_ROLE,"
-            "BIO"
+            "BIO, "
+            "BLOB"
             ") "
             "values (?, ?, ?, ?, ?)"
         )
@@ -57,7 +59,8 @@ class BioBotDB():
             slack_id,
             name,
             company_role,
-            bio
+            bio,
+            img
         )
 
         cls.cursor.execute(insert_cmd, params)
@@ -77,5 +80,5 @@ class BioBotDB():
             "Biography: {}"
         ).format(cls.cursor.fetchone()[1], cls.cursor.fetchone()[2], cls.cursor.fetchone()[3])
 
-        return message
+        return [cursor.fetchone()[4], message]
 
