@@ -50,7 +50,7 @@ class BioBotDB():
             "NAME,"
             "COMPANY_ROLE,"
             "BIO, "
-            "BLOB"
+            "PICTURE"
             ") "
             "values (?, ?, ?, ?, ?)"
         )
