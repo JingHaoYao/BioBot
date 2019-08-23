@@ -48,11 +48,12 @@ def parse_direct_mention(message_text):
     # the first group contains the username, the second group contains the remaining message
     return (matches.group(1), matches.group(2).strip()) if matches else (None, None)
 
-def post_message(channel, text):
+def post_message(channel, text, attachment=None):
     slack_client.api_call(
         "chat.postMessage",
         channel=channel,
-        text=text
+        text=text,
+        attachments=attachment
     )
 
 def get_bio_data_from_user(user):
@@ -75,6 +76,7 @@ def handle_command(command, channel, user):
     # Finds and executes the given command, filling in response
     response = None
     # This is where you start to implement more commands!
+    attachment = None
     if command.startswith("help"):
         response = "Possible commands are:\n- " + "\n- ".join(command_list)
     elif command.startswith("display bio"):
@@ -83,7 +85,8 @@ def handle_command(command, channel, user):
         if slack_id is None:
             response = "Please enter a person to display their bio!"
         else:
-            response = biobot_db.select_bio_db(slack_id)
+            image_url, response = biobot_db.select_bio_db(slack_id)
+            attachment = [{"title": "Picture", "image_url": image_url}]
     elif command.startswith("remove bio"):
         biobot_db.delete_bio_db(user)
         response = "Bio deleted!"
@@ -147,7 +150,8 @@ def handle_command(command, channel, user):
     # Sends the response back to the channel
     post_message(
         channel,
-        text=response or default_response
+        text=response or default_response,
+        attachment=attachment
     )
 
 if __name__ == "__main__":
