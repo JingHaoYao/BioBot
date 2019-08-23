@@ -109,7 +109,7 @@ def handle_command(command, channel, user):
         )
         add_bio_desc = get_bio_data_from_user(user)
 
-        response = "Thanks! Here's a rundown of what you added:\nName: {}\nRole: {}\nBio: {}".format(add_bio_name, add_bio_role, add_bio_desc)
+        response = "Thanks! Here's a rundown of what you added:\nName: {}\nRole: {}\nBiography: {}".format(add_bio_name, add_bio_role, add_bio_desc)
         biobot_db.insert_bio_db(user, add_bio_name, add_bio_role, add_bio_desc)
 
     # Sends the response back to the channel

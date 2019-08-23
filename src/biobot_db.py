@@ -16,7 +16,7 @@ class BioBotDB():
             "BIO TEXT NOT NULL "
             ")"
         )
-        self.sqlite_path = "/tmp/biobot_sqlite.db"
+        self.sqlite_path = os.getenv("HOME") + "/biobot_sqlite.db"
 
         #
         # Connect to sqlite database
@@ -30,7 +30,7 @@ class BioBotDB():
         #
         self.cursor.execute(self.create_table)
         self.conn.commit()
-        
+
     def delete_bio_db(self, slack_id):
         # constructing delete command
         delete_cmd = "DELETE FROM BIOBOT_ENTRIES WHERE SLACK_ID='{}'".format(slack_id)
