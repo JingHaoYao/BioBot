@@ -4,6 +4,7 @@ import re
 import sqlite3
 from slackclient import SlackClient
 from biobot_db import BioBotDB
+import requests
 
 
 # instantiate Slack client
@@ -109,8 +110,39 @@ def handle_command(command, channel, user):
         )
         add_bio_desc = get_bio_data_from_user(user)
 
+        response = "Can you upload a picture of yourself?"
+        post_message(
+            channel,
+            text=response
+        )
+
+        missing = True
+        while missing:
+            for event in slack_client.rtm_read():
+                if event["type"] == "file_shared" and not "subtype" in event:
+                    payload = {'token': os.environ.get('SLACK_BOT_TOKEN'), 'file' : event["file_id"]}
+                    r = requests.get('https://slack.com/api/files.info', params=payload)
+                    attributes = r.text.split(",")
+                    for x in attributes:
+                        if "\"user\"" in x:
+                            p = x .split(':')
+                            image_user = p[1].strip("\"")
+                        if "\"url_private\"" in x:
+                            j = x .split('\":')
+                            imagee_url = j[1].strip("\"")
+                    if image_user == user:
+                        image_url = imagee_url.replace('\\', '')
+                        missing = False
+
         response = "Thanks! Here's a rundown of what you added:\nName: {}\nRole: {}\nBiography: {}".format(add_bio_name, add_bio_role, add_bio_desc)
-        biobot_db.insert_bio_db(user, add_bio_name, add_bio_role, add_bio_desc)
+        slack_client.api_call(
+            "chat.postMessage",
+            channel=channel,
+            text=response,
+            attachments=[{"title": "Your Picture", "image_url": image_url}]
+            )
+        biobot_db.insert_bio_db(user, add_bio_name, add_bio_role, add_bio_desc, image_url)
+        return
 
     # Sends the response back to the channel
     post_message(
